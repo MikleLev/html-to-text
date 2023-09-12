@@ -29,6 +29,7 @@ class Program
                 <p>1 тест На листе 3 вынесен узел А, откуда он? Вынести его или дать ссылку на него.</p>
                 <div></div>
                 <div>2 На листе 7 примечания выполнить над основной надписью (см. ГОСТ 2.316-2008). Обращаю Ваше внимание, что на всех листах примечания д.б. выполнены над основной надписью шириной 185 мм</div>
+                тест тест
             </body>
         </html>";
 
@@ -43,12 +44,12 @@ class Program
 
         StringBuilder txtContent = new StringBuilder();
 
-        ProcessNode(doc.DocumentNode, txtContent, false, null);
+        ProcessNode(doc.DocumentNode, txtContent);
 
         return txtContent.ToString();
     }
 
-    static void ProcessNode(HtmlNode node, StringBuilder txtContent, bool isList, string parentTag)
+    static void ProcessNode(HtmlNode node, StringBuilder txtContent)
     {
         if (node.NodeType == HtmlNodeType.Text)
         {
@@ -71,32 +72,13 @@ class Program
         }
         else
         {
-            int index = 1;
             foreach (var childNode in node.ChildNodes)
             {
-                if (node.Name != "div")
-                {
-                    ProcessNode(childNode, txtContent, node.Name == "ul" || node.Name == "ol", node.Name);
-                }
+                ProcessNode(childNode, txtContent);
             }
 
-            if (node.Name == "ul" && parentTag != "li")
+            if (node.Name == "ul" || node.Name == "ol")
             {
-                foreach (var listItem in node.SelectNodes(".//li"))
-                {
-                    txtContent.Append("• ");
-                    txtContent.AppendLine(listItem.InnerText.Trim());
-                }
-                txtContent.AppendLine();
-            }
-            else if (node.Name == "ol" && parentTag != "li")
-            {
-                foreach (var listItem in node.SelectNodes(".//li"))
-                {
-                    txtContent.AppendFormat("{0}. {1}", index, listItem.InnerText.Trim());
-                    txtContent.AppendLine();
-                    index++;
-                }
                 txtContent.AppendLine();
             }
         }
