@@ -1,40 +1,28 @@
 ﻿using HtmlAgilityPack;
 using System;
+using System.IO;
 using System.Text;
 
 class Program
 {
     static void Main(string[] args)
     {
-        string htmlContent = @"
-        <html>
-            <head>
-                <meta content='text/html; charset=unicode' http-equiv='Content-Type'>
-            </head>
-            <body>
-                <h1>Main Header</h1>
-                <p>This is a paragraph of text.</p>
-                <ul>
-                    <li>Bullet Point 1</li>
-                    <li>Bullet Point 2</li>
-                    <li>Bullet Point 3</li>
-                </ul>
-                <ol>
-                    <li>Numbered Item 1</li>
-                    <li>Numbered Item 2</li>
-                    <li>Numbered Item 3</li>
-                </ol>
-                <p>Visit <a href='https://example.com'>Example</a> website.</p>
-                <div>Highlighted Text</div>
-                <p>1 тест На листе 3 вынесен узел А, откуда он? Вынести его или дать ссылку на него.</p>
-                <div></div>
-                <div>2 На листе 7 примечания выполнить над основной надписью (см. ГОСТ 2.316-2008). Обращаю Ваше внимание, что на всех листах примечания д.б. выполнены над основной надписью шириной 185 мм</div>
-                тест тест
-            </body>
-        </html>";
+        // Устанавливаем кодировку консоли в UTF-8
+        Console.OutputEncoding = Encoding.UTF8;
 
-        string txtContent = ConvertHtmlToTxt(htmlContent);
-        Console.WriteLine(txtContent);
+        string filePath = "C:\\Users\\Миша\\source\\repos\\html-to-text\\example.txt"; // Укажите путь к файлу HTML
+
+        if (File.Exists(filePath))
+        {
+            string htmlContent = File.ReadAllText(filePath);
+
+            string txtContent = ConvertHtmlToTxt(htmlContent);
+            Console.WriteLine(txtContent);
+        }
+        else
+        {
+            Console.WriteLine("HTML file not found.");
+        }
     }
 
     static string ConvertHtmlToTxt(string htmlContent)
@@ -70,6 +58,10 @@ class Program
         {
             txtContent.AppendLine(node.InnerText.Trim());
         }
+        else if (node.Name == "table" && node.HasClass("whitelisted-table"))
+        {
+            txtContent.AppendLine(ConvertTable(node));
+        }
         else
         {
             foreach (var childNode in node.ChildNodes)
@@ -82,5 +74,41 @@ class Program
                 txtContent.AppendLine();
             }
         }
+    }
+
+    static string ConvertTable(HtmlNode node)
+    {
+        var txtTable = new StringBuilder();
+        var trNodes = node.SelectNodes(".//tr");
+
+        if (trNodes != null)
+        {
+            var headerRow = trNodes[0];
+            var headers = headerRow.SelectNodes(".//th");
+            var columnCount = headers.Count;
+
+            foreach (var header in headers)
+            {
+                txtTable.Append(header.InnerText.Trim() + "\t");
+            }
+            txtTable.AppendLine();
+
+            for (int i = 1; i < trNodes.Count; i++)
+            {
+                var row = trNodes[i];
+                var columns = row.SelectNodes(".//td");
+                if (columns.Count != columnCount)
+                {
+                    continue; // Skip rows with inconsistent column count
+                }
+                foreach (var column in columns)
+                {
+                    txtTable.Append(column.InnerText.Trim() + "\t");
+                }
+                txtTable.AppendLine();
+            }
+        }
+
+        return txtTable.ToString();
     }
 }
