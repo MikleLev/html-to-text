@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <meta content='text/html; charset=unicode' http-equiv='Content-Type'>
+    </head>
+    <body>
+        <h1>Main Header</h1>
+        <p>This is a paragraph of text.</p>
+        <ul>
+            <li>Bullet Point 1</li>
+            <li>Bullet Point 2</li>
+            <li>Bullet Point 3</li>
+        </ul>
+        <ol>
+            <li>Numbered Item 1</li>
+            <li>Numbered Item 2</li>
+            <li>Numbered Item 3</li>
+        </ol>
+        <p>Visit <a href='https://example.com'>Example</a> website.</p>
+        <div>Highlighted Text</div>
+        <p>1 тест На листе 3 вынесен узел А, откуда он? Вынести его или дать ссылку на него.</p>
+        <div></div>
+        <div>2 На листе 7 примечания выполнить над основной надписью (см. ГОСТ 2.316-2008). Обращаю Ваше внимание, что на всех листах примечания д.б. выполнены над основной надписью шириной 185 мм</div>
+        тест тест
+        <h3>Example Table</h3>
+        <table class='whitelisted-table'>
+            <thead>
+                <tr>
+                    <th>Company</th>
+                    <th>Contact</th>
+                    <th>Country</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Alfreds Futterkiste</td>
+                    <td>Maria Anders</td>
+                    <td>Germany</td>
+                </tr>
+                <tr>
+                    <td>Centro comercial Moctezuma</td>
+                    <td>Francisco Chang</td>
+                    <td>Mexico</td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>
