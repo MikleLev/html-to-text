@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 class Program
@@ -30,6 +31,28 @@ class Program
                 <div></div>
                 <div>2 На листе 7 примечания выполнить над основной надписью (см. ГОСТ 2.316-2008). Обращаю Ваше внимание, что на всех листах примечания д.б. выполнены над основной надписью шириной 185 мм</div>
                 тест тест
+                <h3>Example Table</h3>
+                <table class='whitelisted-table'>
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Contact</th>
+                            <th>Country</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Alfreds Futterkiste</td>
+                            <td>Maria Anders</td>
+                            <td>Germany</td>
+                        </tr>
+                        <tr>
+                            <td>Centro comercial Moctezuma</td>
+                            <td>Francisco Chang</td>
+                            <td>Mexico</td>
+                        </tr>
+                    </tbody>
+                </table>
             </body>
         </html>";
 
@@ -70,6 +93,10 @@ class Program
         {
             txtContent.AppendLine(node.InnerText.Trim());
         }
+        else if (node.Name == "table" && node.HasClass("whitelisted-table"))
+        {
+            txtContent.AppendLine(ConvertTable(node));
+        }
         else
         {
             foreach (var childNode in node.ChildNodes)
@@ -82,5 +109,41 @@ class Program
                 txtContent.AppendLine();
             }
         }
+    }
+
+    static string ConvertTable(HtmlNode node)
+    {
+        var txtTable = new StringBuilder();
+        var trNodes = node.SelectNodes(".//tr");
+
+        if (trNodes != null)
+        {
+            var headerRow = trNodes[0];
+            var headers = headerRow.SelectNodes(".//th");
+            var columnCount = headers.Count;
+
+            foreach (var header in headers)
+            {
+                txtTable.Append(header.InnerText.Trim() + "\t");
+            }
+            txtTable.AppendLine();
+
+            for (int i = 1; i < trNodes.Count; i++)
+            {
+                var row = trNodes[i];
+                var columns = row.SelectNodes(".//td");
+                if (columns.Count != columnCount)
+                {
+                    continue; // Skip rows with inconsistent column count
+                }
+                foreach (var column in columns)
+                {
+                    txtTable.Append(column.InnerText.Trim() + "\t");
+                }
+                txtTable.AppendLine();
+            }
+        }
+
+        return txtTable.ToString();
     }
 }
